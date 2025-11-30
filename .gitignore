@@ -10,3 +10,24 @@ catboost_info/
 
 # Large raw datasets (keep local only)
 creditcard.csv
+
+# Ignore per-seed and raw result files
+results_*_seed*.csv
+results_BreastCancer_cv.csv
+results_HeartDisease_cv.csv
+results_PimaDiabetes_cv.csv
+results_wine_cv.csv
+results_breastcancer.csv
+results_heartdisease.csv
+results_pimadiabetes.csv
+results_wine.csv
+results_creditcard_fraud.csv
+breast_cancer_results.csv
+heart_results.csv
+pima_diabetes_results.csv
+wine_results.csv
+
+# Bulk plots (will be regenerated)
+*_acc.png
+*_f1.png
+*_gap.png
