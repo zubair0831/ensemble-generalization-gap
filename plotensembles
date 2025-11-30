@@ -1,0 +1,77 @@
+# plot_ensembles.py
+# Read results_*.csv produced by ensemble_experiments.py
+# and create paper-ready plots for each dataset.
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def make_paper_plots(results_df, dataset_name, f1_col="F1 Score (Test)"):
+    """
+    Creates ONE summary figure with:
+      - Train vs Test Accuracy (line)
+      - Generalization Gap (bar)
+      - F1 metric (bar)
+    Saves as: <dataset_name>_summary.png
+    """
+    models = results_df["Model"].values
+    train_accs = results_df["Train Accuracy"].values
+    test_accs = results_df["Test Accuracy"].values
+    gaps = results_df["Generalization Gap"].values
+    f1s = results_df[f1_col].values
+
+    x = np.arange(len(models))
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    # (1) Train vs Test Accuracy
+    ax = axes[0]
+    ax.plot(x, train_accs, marker="o", label="Train Accuracy")
+    ax.plot(x, test_accs, marker="o", label="Test Accuracy")
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=75, ha="right", fontsize=8)
+    ax.set_ylabel("Accuracy")
+    ax.set_title(f"{dataset_name}: Train vs Test Accuracy")
+    ax.legend(loc="lower right")
+
+    # (2) Generalization Gap
+    ax = axes[1]
+    ax.bar(x, gaps)
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=75, ha="right", fontsize=8)
+    ax.set_ylabel("Train - Test Accuracy")
+    ax.set_title(f"{dataset_name}: Generalization Gap")
+
+    # (3) F1 (or F1(Fraud=1))
+    ax = axes[2]
+    ax.bar(x, f1s)
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=75, ha="right", fontsize=8)
+    ax.set_ylabel(f1_col)
+    ax.set_title(f"{dataset_name}: {f1_col} by Model")
+
+    plt.tight_layout()
+    save_name = f"{dataset_name.lower()}_summary.png"
+    plt.savefig(save_name, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"Saved: {save_name}")
+
+
+if __name__ == "__main__":
+    # Map: dataset name -> (csv file, F1 column name)
+    configs = [
+        ("BreastCancer", "results_breastcancer.csv", "F1 Score (Test)"),
+        ("Wine", "results_wine.csv", "F1 Score (Test)"),
+        ("HeartDisease", "results_heartdisease.csv", "F1 Score (Test)"),
+        ("PimaDiabetes", "results_pimadiabetes.csv", "F1 Score (Test)"),
+        ("CreditCardFraud", "results_creditcard_fraud.csv", "F1 (Fraud=1)"),
+    ]
+
+    for ds_name, csv_file, f1_col in configs:
+        try:
+            df = pd.read_csv(csv_file)
+            print(f"Loaded {csv_file}")
+            make_paper_plots(df, ds_name, f1_col=f1_col)
+        except FileNotFoundError:
+            print(f"WARNING: {csv_file} not found, skipping {ds_name}")

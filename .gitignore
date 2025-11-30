@@ -1,0 +1,12 @@
+# OS junk
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
+
+# CatBoost logs
+catboost_info/
+
+# Large raw datasets (keep local only)
+creditcard.csv
